@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kervan - Üniversite Pazaryeri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A237E;
+            --secondary: #00BCD4;
+            --accent: #FF9800;
+            --background: #FFFFFF;
+            --surface: #F5F5F5;
+            --text: #212121;
+            --text-secondary: #757575;
+            --border: #E0E0E0;
+            --success: #4CAF50;
+            --error: #F44336;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--surface);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+        }
+        
+        .screen {
+            display: none;
+            padding-bottom: 80px;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .orange-button {
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            top: -10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-card {
+            min-width: 200px;
+        }
+        
+        .listing-card {
+            transition: transform 0.2s;
+        }
+        
+        .listing-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background-color: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--secondary);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen active">
+        <!-- Header -->
+        <header class="bg-[#1A237E] text-white px-4 py-3 flex justify-between items-center">
+            <img src="assets/logo.png" alt="Kervan Logo" class="h-10">
+            <div id="wallet-widget" class="bg-white px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer" onclick="showScreen('wallet-screen')">
+                <i class="fas fa-wallet text-[#FF9800]"></i>
+                <span id="coin-amount" class="text-[#FF9800] font-bold">0</span>
+                <span class="text-gray-500 text-xs">Coin</span>
+            </div>
+        </header>
+
+        <!-- Gift Banner -->
+        <div id="gift-banner" class="gradient-bg text-white mx-4 mt-4 rounded-xl p-4 flex items-center gap-4 cursor-pointer" onclick="claimGift()">
+            <i class="fas fa-gift text-3xl"></i>
+            <div class="flex-1">
+                <h3 class="font-bold text-lg" id="gift-text">80 Coin Hediyen Hazır!</h3>
+                <p class="text-sm opacity-90" id="gift-subtitle">30 gün içinde geçerli</p>
+            </div>
+            <i class="fas fa-chevron-right" id="gift-arrow"></i>
+        </div>
+
+        <!-- Tasks Carousel -->
+        <div class="mt-6">
+            <h3 class="text-xl font-semibold px-4 mb-2">Görevler</h3>
+            <div class="flex gap-4 px-4 overflow-x-auto pb-4" style="scrollbar-width: none;">
+                <div class="task-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold flex-1">Profilini Tamamla</h4>
+                        <div class="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                            <i class="fas fa-star text-[#FF9800] text-xs"></i>
+                            <span class="text-[#FF9800] font-bold text-xs">+5</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar mb-1">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-500">30 gün içinde geçerli</span>
+                    </div>
+                </div>
+                
+                <div class="task-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold flex-1">İlk İlanını Ver</h4>
+                        <div class="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                            <i class="fas fa-star text-[#FF9800] text-xs"></i>
+                            <span class="text-[#FF9800] font-bold text-xs">+10</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar mb-1">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-500">30 gün içinde geçerli</span>
+                    </div>
+                </div>
+                
+                <div class="task-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-semibold flex-1">Kitap Sat</h4>
+                        <div class="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                            <i class="fas fa-star text-[#FF9800] text-xs"></i>
+                            <span class="text-[#FF9800] font-bold text-xs">+15</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar mb-1">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xs text-gray-500">30 gün içinde geçerli</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="mt-4 mb-2">
+            <div class="flex gap-2 px-4 overflow-x-auto pb-2" style="scrollbar-width: none;">
+                <button class="category-chip active px-4 py-2 rounded-full bg-[#1A237E] text-white text-sm font-medium whitespace-nowrap" onclick="filterCategory(null)">
+                    Tümü
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full bg-gray-100 text-[#1A237E] text-sm font-medium whitespace-nowrap flex items-center gap-2" onclick="filterCategory('Akademik Destek')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Akademik</span>
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full bg-gray-100 text-[#1A237E] text-sm font-medium whitespace-nowrap flex items-center gap-2" onclick="filterCategory('2. El Kitap')">
+                    <i class="fas fa-book"></i>
+                    <span>Kitap</span>
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full bg-gray-100 text-[#1A237E] text-sm font-medium whitespace-nowrap flex items-center gap-2" onclick="filterCategory('Eşya')">
+                    <i class="fas fa-cube"></i>
+                    <span>Eşya</span>
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full bg-gray-100 text-[#1A237E] text-sm font-medium whitespace-nowrap flex items-center gap-2" onclick="filterCategory('Not Paylaşımı')">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Not</span>
+                </button>
+                <button class="category-chip px-4 py-2 rounded-full bg-gray-100 text-[#1A237E] text-sm font-medium whitespace-nowrap flex items-center gap-2" onclick="filterCategory('Tasarım Hizmeti')">
+                    <i class="fas fa-palette"></i>
+                    <span>Tasarım</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Listings -->
+        <div id="listings-container" class="px-4 pb-6">
+            <!-- Listings will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Listing Detail Screen -->
+    <div id="detail-screen" class="screen">
+        <header class="bg-[#1A237E] text-white px-4 py-3 flex items-center gap-4">
+            <button onclick="showScreen('home-screen')" class="text-white">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2 class="text-lg font-semibold">İlan Detayı</h2>
+        </header>
+        <div id="detail-content" class="pb-6">
+            <!-- Detail content will be dynamically inserted -->
+        </div>
+    </div>
+
+    <!-- Wallet Screen -->
+    <div id="wallet-screen" class="screen">
+        <header class="bg-[#1A237E] text-white px-4 py-3 flex justify-between items-center">
+            <img src="assets/logo.png" alt="Kervan Logo" class="h-10">
+            <div id="wallet-widget-2" class="bg-white px-4 py-2 rounded-full flex items-center gap-2">
+                <i class="fas fa-wallet text-[#FF9800]"></i>
+                <span id="coin-amount-2" class="text-[#FF9800] font-bold">0</span>
+                <span class="text-gray-500 text-xs">Coin</span>
+            </div>
+        </header>
+        
+        <div class="px-4 py-6">
+            <div class="bg-white rounded-xl p-6 shadow-sm text-center mb-6">
+                <p class="text-gray-500 mb-2">Toplam Coin</p>
+                <div class="flex items-center justify-center gap-2">
+                    <i class="fas fa-star text-[#FF9800] text-2xl"></i>
+                    <span id="wallet-balance" class="text-3xl font-bold text-[#FF9800]">0</span>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4">İşlem Geçmişi</h3>
+            <div id="transactions-container">
+                <!-- Transactions will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Screen -->
+    <div id="profile-screen" class="screen">
+        <header class="bg-[#1A237E] text-white px-4 py-3 flex justify-between items-center">
+            <img src="assets/logo.png" alt="Kervan Logo" class="h-10">
+            <div id="wallet-widget-3" class="bg-white px-4 py-2 rounded-full flex items-center gap-2">
+                <i class="fas fa-wallet text-[#FF9800]"></i>
+                <span id="coin-amount-3" class="text-[#FF9800] font-bold">0</span>
+                <span class="text-gray-500 text-xs">Coin</span>
+            </div>
+        </header>
+        
+        <div class="px-4 py-6">
+            <div class="bg-white rounded-xl p-6 shadow-sm text-center mb-6">
+                <i class="fas fa-user-circle text-[#1A237E] text-6xl mb-4"></i>
+                <h2 class="text-2xl font-bold mb-2">Ahmet Yılmaz</h2>
+                <div class="flex items-center justify-center gap-2 text-gray-500 mb-1">
+                    <i class="fas fa-university"></i>
+                    <span>İTÜ / Bilgisayar Mühendisliği</span>
+                </div>
+                <div class="flex items-center justify-center gap-2 text-gray-500">
+                    <i class="fas fa-envelope"></i>
+                    <span>ahmet@example.com</span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-user text-[#1A237E]"></i>
+                        <span class="font-medium">Profilimi Düzenle</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-list text-[#1A237E]"></i>
+                        <span class="font-medium">İlanlarım</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-heart text-[#1A237E]"></i>
+                        <span class="font-medium">Favorilerim</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-cog text-[#1A237E]"></i>
+                        <span class="font-medium">Ayarlar</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-question-circle text-[#1A237E]"></i>
+                        <span class="font-medium">Yardım & Destek</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+                <div class="menu-item bg-white rounded-lg p-4 border border-gray-200 flex items-center justify-between cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-sign-out-alt text-[#F44336]"></i>
+                        <span class="font-medium text-[#F44336]">Çıkış Yap</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Listing Screen -->
+    <div id="create-screen" class="screen">
+        <header class="bg-[#1A237E] text-white px-4 py-3 flex justify-between items-center">
+            <img src="assets/logo.png" alt="Kervan Logo" class="h-10">
+            <div id="wallet-widget-4" class="bg-white px-4 py-2 rounded-full flex items-center gap-2">
+                <i class="fas fa-wallet text-[#FF9800]"></i>
+                <span id="coin-amount-4" class="text-[#FF9800] font-bold">0</span>
+                <span class="text-gray-500 text-xs">Coin</span>
+            </div>
+        </header>
+        
+        <div class="px-4 py-6">
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">İlan Başlığı</label>
+                <input type="text" id="listing-title" placeholder="Örn: Kalkülüs 1 Ders Notları" 
+                    class="w-full p-4 border border-gray-200 rounded-lg">
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Kategori</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="category-btn px-4 py-2 rounded-lg border border-gray-200 text-sm" onclick="selectCategory('Akademik Destek', this)">
+                        Akademik Destek
+                    </button>
+                    <button class="category-btn px-4 py-2 rounded-lg border border-gray-200 text-sm" onclick="selectCategory('2. El Kitap', this)">
+                        2. El Kitap
+                    </button>
+                    <button class="category-btn px-4 py-2 rounded-lg border border-gray-200 text-sm" onclick="selectCategory('Eşya', this)">
+                        Eşya
+                    </button>
+                    <button class="category-btn px-4 py-2 rounded-lg border border-gray-200 text-sm" onclick="selectCategory('Not Paylaşımı', this)">
+                        Not Paylaşımı
+                    </button>
+                    <button class="category-btn px-4 py-2 rounded-lg border border-gray-200 text-sm" onclick="selectCategory('Tasarım Hizmeti', this)">
+                        Tasarım Hizmeti
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Açıklama</label>
+                <textarea id="listing-description" placeholder="İlanınız hakkında detaylı bilgi verin..." 
+                    class="w-full p-4 border border-gray-200 rounded-lg h-32"></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Fiyat (Coin)</label>
+                <input type="number" id="listing-price" placeholder="100" 
+                    class="w-full p-4 border border-gray-200 rounded-lg">
+            </div>
+
+            <button onclick="submitListing()" 
+                class="w-full bg-[#1A237E] text-white py-4 rounded-lg font-bold flex items-center justify-center gap-2">
+                <i class="fas fa-check-circle"></i>
+                <span>İlanı Yayınla</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav flex justify-around items-center py-2">
+        <button onclick="showScreen('home-screen')" class="flex flex-col items-center gap-1 text-[#1A237E]">
+            <i class="fas fa-compass text-xl"></i>
+            <span class="text-xs">Keşfet</span>
+        </button>
+        <button onclick="showScreen('create-screen')" class="orange-button">
+            <i class="fas fa-plus text-2xl"></i>
+        </button>
+        <button onclick="showScreen('wallet-screen')" class="flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-wallet text-xl"></i>
+            <span class="text-xs">Cüzdanım</span>
+        </button>
+        <button onclick="showScreen('profile-screen')" class="flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs">Profil</span>
+        </button>
+    </div>
+
+    <script>
+        // State Management
+        let state = {
+            coins: parseInt(localStorage.getItem('coins') || '0'),
+            giftClaimed: localStorage.getItem('giftClaimed') === 'true',
+            selectedCategory: null,
+            selectedListingCategory: null,
+            listings: [
+                {
+                    id: '1',
+                    title: 'Kalkülüs 1 Ders Notları - Tam Set',
+                    description: 'Tüm konuları kapsayan detaylı notlar',
+                    price: 50,
+                    category: 'Not Paylaşımı',
+                    image: 'https://via.placeholder.com/300',
+                    seller: {
+                        name: 'Ahmet Yılmaz',
+                        university: 'İTÜ',
+                        department: 'Bilgisayar Mühendisliği'
+                    }
+                },
+                {
+                    id: '2',
+                    title: 'Fizik 2. El Kitap - Halliday Resnick',
+                    description: 'İyi durumda, sadece ilk 3 bölüm işaretli',
+                    price: 120,
+                    category: '2. El Kitap',
+                    image: 'https://via.placeholder.com/300',
+                    seller: {
+                        name: 'Ayşe Demir',
+                        university: 'Boğaziçi Üniversitesi',
+                        department: 'Fizik'
+                    }
+                },
+                {
+                    id: '3',
+                    title: 'Logo Tasarım Hizmeti',
+                    description: 'Profesyonel logo tasarımı yapılır',
+                    price: 200,
+                    category: 'Tasarım Hizmeti',
+                    image: 'https://via.placeholder.com/300',
+                    seller: {
+                        name: 'Mehmet Kaya',
+                        university: 'Mimar Sinan',
+                        department: 'Grafik Tasarım'
+                    }
+                }
+            ],
+            transactions: JSON.parse(localStorage.getItem('transactions') || '[]')
+        };
+
+        // Initialize
+        function init() {
+            updateCoinDisplay();
+            renderListings();
+            renderTransactions();
+            updateGiftBanner();
+        }
+
+        // Screen Navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // Update bottom nav active state
+            const navButtons = document.querySelectorAll('.bottom-nav button');
+            navButtons.forEach((btn, index) => {
+                if (index === 1) return; // Skip orange button
+                btn.classList.remove('text-[#1A237E]');
+                btn.classList.add('text-gray-500');
+            });
+            
+            if (screenId === 'home-screen') {
+                navButtons[0].classList.add('text-[#1A237E]');
+                navButtons[0].classList.remove('text-gray-500');
+            } else if (screenId === 'wallet-screen') {
+                navButtons[2].classList.add('text-[#1A237E]');
+                navButtons[2].classList.remove('text-gray-500');
+            } else if (screenId === 'profile-screen') {
+                navButtons[3].classList.add('text-[#1A237E]');
+                navButtons[3].classList.remove('text-gray-500');
+            } else if (screenId === 'create-screen') {
+                // Orange button is always active when on create screen
+            }
+        }
+
+        // Coin Management
+        function updateCoinDisplay() {
+            document.getElementById('coin-amount').textContent = state.coins;
+            document.getElementById('coin-amount-2').textContent = state.coins;
+            document.getElementById('coin-amount-3').textContent = state.coins;
+            document.getElementById('coin-amount-4').textContent = state.coins;
+            document.getElementById('wallet-balance').textContent = state.coins;
+        }
+
+        function addCoins(amount, description, expiresIn) {
+            state.coins += amount;
+            localStorage.setItem('coins', state.coins.toString());
+            
+            const transaction = {
+                id: Date.now().toString(),
+                type: 'earned',
+                amount: amount,
+                description: description,
+                expiresIn: expiresIn,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(state.transactions));
+            
+            updateCoinDisplay();
+            renderTransactions();
+        }
+
+        function spendCoins(amount, description) {
+            if (state.coins < amount) {
+                alert(`Yetersiz Coin\n\nBu ilanı almak için ${amount} coin gerekiyor. Şu an ${state.coins} coin'iniz var.`);
+                return false;
+            }
+            
+            state.coins -= amount;
+            localStorage.setItem('coins', state.coins.toString());
+            
+            const transaction = {
+                id: Date.now().toString(),
+                type: 'spent',
+                amount: amount,
+                description: description,
+                createdAt: new Date().toISOString()
+            };
+            
+            state.transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(state.transactions));
+            
+            updateCoinDisplay();
+            renderTransactions();
+            return true;
+        }
+
+        // Gift Claim
+        function claimGift() {
+            if (!state.giftClaimed) {
+                addCoins(80, 'Hoş Geldin Hediyesi', 30);
+                state.giftClaimed = true;
+                localStorage.setItem('giftClaimed', 'true');
+                updateGiftBanner();
+            }
+        }
+
+        function updateGiftBanner() {
+            const banner = document.getElementById('gift-banner');
+            const text = document.getElementById('gift-text');
+            const subtitle = document.getElementById('gift-subtitle');
+            const arrow = document.getElementById('gift-arrow');
+            
+            if (state.giftClaimed) {
+                text.textContent = 'Hediye Alındı!';
+                subtitle.style.display = 'none';
+                arrow.style.display = 'none';
+                banner.onclick = null;
+                banner.style.cursor = 'default';
+            }
+        }
+
+        // Category Filter
+        function filterCategory(category) {
+            state.selectedCategory = category;
+            
+            // Update active state
+            const buttons = document.querySelectorAll('.category-chip');
+            buttons.forEach(chip => {
+                chip.classList.remove('active', 'bg-[#1A237E]', 'text-white');
+                chip.classList.add('bg-gray-100', 'text-[#1A237E]');
+            });
+            
+            // Find and activate the clicked button
+            if (category === null) {
+                buttons[0].classList.add('active', 'bg-[#1A237E]', 'text-white');
+                buttons[0].classList.remove('bg-gray-100', 'text-[#1A237E]');
+            } else {
+                const categoryMap = {
+                    'Akademik Destek': 1,
+                    '2. El Kitap': 2,
+                    'Eşya': 3,
+                    'Not Paylaşımı': 4,
+                    'Tasarım Hizmeti': 5
+                };
+                const index = categoryMap[category];
+                if (index !== undefined && buttons[index]) {
+                    buttons[index].classList.add('active', 'bg-[#1A237E]', 'text-white');
+                    buttons[index].classList.remove('bg-gray-100', 'text-[#1A237E]');
+                }
+            }
+            
+            renderListings();
+        }
+
+        // Render Listings
+        function renderListings() {
+            const container = document.getElementById('listings-container');
+            const filtered = state.selectedCategory 
+                ? state.listings.filter(l => l.category === state.selectedCategory)
+                : state.listings;
+            
+            container.innerHTML = filtered.map(listing => `
+                <div class="listing-card bg-white rounded-xl mb-4 border border-gray-200 shadow-sm cursor-pointer" onclick="showListingDetail('${listing.id}')">
+                    <img src="${listing.image}" alt="${listing.title}" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 line-clamp-2">${listing.title}</h3>
+                        <div class="flex items-center gap-2 text-gray-500 mb-3">
+                            <i class="fas fa-university text-sm"></i>
+                            <span class="text-sm">${listing.seller.university} / ${listing.seller.department}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-star text-[#FF9800]"></i>
+                                <span class="text-xl font-bold text-[#FF9800]">${listing.price}</span>
+                                <span class="text-gray-500 text-sm">Coin</span>
+                            </div>
+                            <div class="bg-gray-100 px-3 py-1 rounded text-xs text-[#1A237E]">
+                                ${listing.category}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show Listing Detail
+        function showListingDetail(listingId) {
+            const listing = state.listings.find(l => l.id === listingId);
+            if (!listing) return;
+            
+            const content = document.getElementById('detail-content');
+            content.innerHTML = `
+                <img src="${listing.image}" alt="${listing.title}" class="w-full h-72 object-cover">
+                <div class="px-4 py-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="bg-gray-100 px-4 py-2 rounded-lg">
+                            <span class="text-sm font-semibold text-[#1A237E]">${listing.category}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-star text-[#FF9800]"></i>
+                            <span class="text-2xl font-bold text-[#FF9800]">${listing.price}</span>
+                            <span class="text-gray-500">Coin</span>
+                        </div>
+                    </div>
+                    
+                    <h1 class="text-3xl font-bold mb-6">${listing.title}</h1>
+                    
+                    <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-user-circle text-[#1A237E] text-4xl"></i>
+                            <div>
+                                <h3 class="font-semibold text-lg">${listing.seller.name}</h3>
+                                <div class="flex items-center gap-2 text-gray-500">
+                                    <i class="fas fa-university text-sm"></i>
+                                    <span class="text-sm">${listing.seller.university} / ${listing.seller.department}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-xl font-semibold mb-2">Açıklama</h3>
+                        <p class="text-gray-600 leading-relaxed">${listing.description}</p>
+                    </div>
+                    
+                    <div class="flex gap-4 mb-6">
+                        <button onclick="handleMessage()" class="flex-1 border-2 border-[#1A237E] text-[#1A237E] py-4 rounded-lg font-semibold flex items-center justify-center gap-2">
+                            <i class="fas fa-comment"></i>
+                            <span>Mesaj At</span>
+                        </button>
+                        <button onclick="handleBuyNow('${listing.id}')" class="flex-1 bg-[#1A237E] text-white py-4 rounded-lg font-bold flex items-center justify-center gap-2">
+                            <i class="fas fa-bolt"></i>
+                            <span>Hemen Al</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            showScreen('detail-screen');
+        }
+
+        function handleBuyNow(listingId) {
+            const listing = state.listings.find(l => l.id === listingId);
+            if (!listing) return;
+            
+            if (confirm(`${listing.title} için ${listing.price} coin harcamak istediğinize emin misiniz?`)) {
+                if (spendCoins(listing.price, listing.title)) {
+                    alert('Başarılı!\n\nİlan satın alındı! Satıcıyla iletişime geçebilirsiniz.');
+                    showScreen('home-screen');
+                }
+            }
+        }
+
+        function handleMessage() {
+            alert('Mesaj özelliği yakında eklenecek!');
+        }
+
+        // Create Listing
+        function selectCategory(category, button) {
+            state.selectedListingCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-[#1A237E]', 'text-white');
+                btn.classList.add('border-gray-200', 'text-gray-700');
+            });
+            button.classList.add('bg-[#1A237E]', 'text-white');
+            button.classList.remove('border-gray-200', 'text-gray-700');
+        }
+
+        function submitListing() {
+            const title = document.getElementById('listing-title').value;
+            const description = document.getElementById('listing-description').value;
+            const price = parseInt(document.getElementById('listing-price').value);
+            
+            if (!title || !description || !price || !state.selectedListingCategory) {
+                alert('Lütfen tüm alanları doldurun.');
+                return;
+            }
+            
+            const newListing = {
+                id: Date.now().toString(),
+                title: title,
+                description: description,
+                price: price,
+                category: state.selectedListingCategory,
+                image: 'https://via.placeholder.com/300',
+                seller: {
+                    name: 'Ahmet Yılmaz',
+                    university: 'İTÜ',
+                    department: 'Bilgisayar Mühendisliği'
+                }
+            };
+            
+            state.listings.unshift(newListing);
+            alert('Başarılı!\n\nİlanınız yayınlandı!');
+            
+            // Reset form
+            document.getElementById('listing-title').value = '';
+            document.getElementById('listing-description').value = '';
+            document.getElementById('listing-price').value = '';
+            state.selectedListingCategory = null;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-[#1A237E]', 'text-white');
+                btn.classList.add('border-gray-200', 'text-gray-700');
+            });
+            
+            showScreen('home-screen');
+            renderListings();
+        }
+
+        // Render Transactions
+        function renderTransactions() {
+            const container = document.getElementById('transactions-container');
+            
+            if (state.transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-wallet text-gray-400 text-5xl mb-4"></i>
+                        <p class="text-gray-500">Henüz işlem yok</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = state.transactions.map(transaction => {
+                const isEarned = transaction.type === 'earned';
+                const color = isEarned ? 'text-[#4CAF50]' : 'text-[#F44336]';
+                const icon = isEarned ? 'arrow-down-circle' : 'arrow-up-circle';
+                
+                return `
+                    <div class="bg-white rounded-lg p-4 border border-gray-200 mb-2 flex items-center gap-4">
+                        <i class="fas fa-${icon} ${color} text-2xl"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold">${transaction.description}</p>
+                            <p class="text-sm text-gray-500">${new Date(transaction.createdAt).toLocaleDateString('tr-TR')}</p>
+                            ${transaction.expiresIn ? `<p class="text-xs text-gray-500 mt-1">${transaction.expiresIn} gün içinde geçerli</p>` : ''}
+                        </div>
+                        <span class="${color} font-bold text-xl">${isEarned ? '+' : '-'}${transaction.amount}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
